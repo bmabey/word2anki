@@ -22,6 +22,7 @@ definitions =  '<ol>\n' + "\n".join((d('.sblk') + d('.sense-block-one')).map(lam
 
 deck_path = "/Users/bmabey/Documents/Anki/Vocabulary of the Amanuensis.anki"
 deck = DeckStorage.Deck(deck_path)
+# TODO: sync here before you change it to avoid conflicts...
 media_name = deck.addMedia(mp3_path)
 f = deck.newFact()
 f['Front']  = pronounciation + u' <span style="font-style:italic;">' + part_of_speech + u'</span> ' + fancy_pro + u'<br />[sound:' + media_name + ']'
@@ -34,4 +35,5 @@ print f['Back']
 
 print deck.addFact(f)
 deck.save()
+# TODO: sync here so it shows up on phone...
 deck.close()
