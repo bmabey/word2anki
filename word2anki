@@ -1,0 +1,37 @@
+#!/usr/bin/env python
+import sys, re, os.path, os, string
+
+from pyquery import PyQuery as pq
+
+print os.path.abspath(os.path.join(os.path.dirname(__file__), 'libanki'))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'libanki')))
+from anki import DeckStorage, media
+
+word = sys.argv[1] # TODO: swap out for getopt and allow for passing the deck as well
+d = pq(url='http://www.merriam-webster.com/dictionary/' + word)
+pronounciation = d(".headword h2").text()
+fancy_pro = d(".headword span.pr").text()
+part_of_speech = d(".headword em").text()
+wave_file_name = re.search("'(.*)',", d(".headword input").attr.onclick).group(1)
+wave_url = 'http://www.merriam-webster.com/audio.php?file=' + wave_file_name
+wd = pq(wave_url)
+wave = wd(".trouble a").attr.href
+os.system('cd /tmp; wget ' + wave + ' -O ' + word + ' && lame ' + word)
+mp3_path = os.path.join('/tmp/', word + '.mp3')
+definitions =  '<ol>\n' + "\n".join((d('.sblk') + d('.sense-block-one')).map(lambda i, e: u'  <li>\n' + string.strip(re.sub('<strong>:</strong>','', pq(e)(".ssens").html() + "\n  </li>")))) + '\n</ol>\n'
+
+deck_path = "/Users/bmabey/Documents/Anki/Vocabulary of the Amanuensis.anki"
+deck = DeckStorage.Deck(deck_path)
+media_name = deck.addMedia(mp3_path)
+f = deck.newFact()
+f['Front']  = pronounciation + u' <span style="font-style:italic;">' + part_of_speech + u'</span> ' + fancy_pro + u'<br />[sound:' + media_name + ']'
+f['Back'] = definitions
+
+print "The front of the card:"
+print f['Front']
+print "The back of the card:"
+print f['Back']
+
+print deck.addFact(f)
+deck.save()
+deck.close()
