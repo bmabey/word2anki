@@ -1,9 +1,10 @@
 #!/usr/bin/env python
+# Usage: word2anki good
+# Tip: xargs -n1 word2anki
 import sys, re, os.path, os, string
 
 from pyquery import PyQuery as pq
 
-print os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'libanki'))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'libanki')))
 from anki import DeckStorage, media
 
