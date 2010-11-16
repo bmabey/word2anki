@@ -3,8 +3,8 @@ import sys, re, os.path, os, string
 
 from pyquery import PyQuery as pq
 
-print os.path.abspath(os.path.join(os.path.dirname(__file__), 'libanki'))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'libanki')))
+print os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'libanki'))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'libanki')))
 from anki import DeckStorage, media
 
 word = sys.argv[1] # TODO: swap out for getopt and allow for passing the deck as well
@@ -18,6 +18,7 @@ wd = pq(wave_url)
 wave = wd(".trouble a").attr.href
 os.system('cd /tmp; wget ' + wave + ' -O ' + word + ' && lame ' + word)
 mp3_path = os.path.join('/tmp/', word + '.mp3')
+# TODO: handle definitions like http://www.merriam-webster.com/dictionary/litigious
 definitions =  '<ol>\n' + "\n".join((d('.sblk') + d('.sense-block-one')).map(lambda i, e: u'  <li>\n' + string.strip(re.sub('<strong>:</strong>','', pq(e)(".ssens").html() + "\n  </li>")))) + '\n</ol>\n'
 
 deck_path = "/Users/bmabey/Documents/Anki/Vocabulary of the Amanuensis.anki"
@@ -33,7 +34,7 @@ print f['Front']
 print "The back of the card:"
 print f['Back']
 
-print deck.addFact(f)
+deck.addFact(f)
 deck.save()
 # TODO: sync here so it shows up on phone...
 deck.close()
